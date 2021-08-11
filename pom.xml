@@ -258,13 +258,13 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
+<!--            <dependency>
                 <groupId>org.microstone.platform</groupId>
                 <artifactId>ms-bom</artifactId>
                 <version>${ms.tool.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>io.spring.platform</groupId>

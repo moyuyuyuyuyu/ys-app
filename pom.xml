@@ -63,6 +63,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.17</version>
             <!-- <version>默认版本号</version> -->
         </dependency>
 
@@ -258,13 +259,13 @@
                 <scope>import</scope>
             </dependency>
 
-<!--            <dependency>
+            <dependency>
                 <groupId>org.microstone.platform</groupId>
                 <artifactId>ms-bom</artifactId>
                 <version>${ms.tool.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>-->
+            </dependency>
 
             <dependency>
                 <groupId>io.spring.platform</groupId>
@@ -352,7 +353,7 @@
         <repository>
             <id>ms-nexus</id>
             <name>Release Repository</name>
-            <url>http://cnexus.icwn.cn:8081/repository/maven-public/</url>
+            <url>http://cnexus.icwn.cn:8081/repository/maven-releases/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy></releases>

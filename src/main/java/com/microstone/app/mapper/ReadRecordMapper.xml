@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.ReadRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="readRecordResultMap" type="com.microstone.app.entity.ReadRecord">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="relation_id" property="relationId"/>
+        <result column="read_date" property="readDate"/>
+        <result column="share_id" property="shareId"/>
+        <result column="thumb_up" property="thumbUp"/>
+    </resultMap>
+
+
+    <select id="selectReadRecordPage" resultMap="readRecordResultMap">
+        select * from app_read_record where is_deleted = 0
+    </select>
+
+
+    <select id="getReadRecordForAppPageList" resultType="com.microstone.app.dto.GetReadRecordPageListDTO">
+        SELECT
+        rr.id,
+        rr.share_id as shareId,
+        r.relation_id as relationId,
+        r.type,
+        case r.type when 1 then a.title
+        when 2 then v.title
+        when 3 then d.title
+        else p.title end as title,
+        r.share_date as shareDate,
+        r.share_user_id as shareUserId,
+        r.share_type as shareType,
+        rr.read_user_id as readUserId,
+        rr.read_date as readDate,
+        rr.read_time as readTime
+        FROM
+        app_read_record rr
+        LEFT JOIN
+        app_share_record r on r.id = rr.share_id
+        LEFT JOIN
+        app_article a on r.relation_id = a.id
+        LEFT JOIN
+        app_video v on r.relation_id = v.id
+        LEFT JOIN
+        app_document d on r.relation_id = d.id
+        LEFT JOIN
+        app_poster p on r.relation_id = p.id
+        WHERE
+        r.share_type = 1
+        and r.is_deleted = 0
+        and r.share_user_id = #{param.userId}
+        <if test="param.sort == 1">
+            order by rr.read_date desc
+        </if>
+        <if test="param.sort == 2">
+            order by rr.read_time desc
+        </if>
+    </select>
+
+
+    <select id="getReadRecordForAppShareRecord" resultType="com.microstone.app.dto.GetReadRecordForAppShareRecordDTO">
+        SELECT
+        *
+        FROM(
+        SELECT
+        rr.share_user_id as shareUserId,
+        rr.relation_id as relationId,
+        rr.read_user_id as readUserId,
+        Max(rr.read_date )as readDate,
+        SUM(rr.read_time) as readTime,
+        Count(1) as readCount
+        FROM
+        app_read_record rr
+        where rr.is_deleted = 0
+        and rr.share_user_id = #{param.userId}
+        and rr.relation_id = #{param.relationId}
+        GROUP BY
+        rr.read_user_id,
+        rr.share_user_id,
+        rr.relation_id) a
+        <if test="param.sort == 1">
+            order by a.readDate desc
+        </if>
+        <if test="param.sort == 2">
+            order by a.readTime desc
+        </if>
+    </select>
+
+
+    <select id="getReadRecordForShareRecord" resultType="com.microstone.app.dto.ReadRecordForShareRecordDTO">
+SELECT
+	count(1) as readCount,
+	MAX(read_date) as readDate
+FROM
+	app_read_record
+where is_deleted = 0 and share_id = #{param.shareId}
+GROUP BY
+	read_user_id
+    </select>
+
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.PositionMapper">
+
+    <select id="getCurrentPositionList" resultType="com.microstone.app.dto.CurrentPositionDTO">
+Select
+	ap.name,
+	b.product_id as productId,
+	b.money,
+	b.`share`,
+	b.trans_share as transShare,
+	b.tenant_id,
+	ap.relation_id as relationId,
+	ap.type as productType,
+	ap.investment_term_sum as investmentTermSum,
+	ap.min_income_rate as minIncomeRate,
+	ap.max_income_rate as maxIncomeRate,
+	b.currency_id as currencyId,
+	b.currency_name as currencyName,
+	b.currency_character as currencyCharacter,
+	b.exchange_rate as exchangeRate
+FROM
+	app_position_count b
+LEFT JOIN
+	app_product ap on b.product_id = ap.id
+where
+	case when b.trans_share = 0 then b.money > 0 else b.share > 0 end
+	and b.is_deleted = 0
+	and b.customer_id = #{param.customerId}
+    </select>
+
+
+	<select id="getHistoryPositionList" resultType="com.microstone.app.dto.HistoryPositionDTO">
+Select
+	ap.name,
+	b.product_id as productId,
+	b.money,
+	b.`share`,
+	b.trans_share as transShare,
+	b.tenant_id,
+	ap.relation_id as relationId,
+	ap.type as productType,
+	ap.investment_term_sum as investmentTermSum,
+	ap.min_income_rate as minIncomeRate,
+	ap.max_income_rate as maxIncomeRate,
+	b.last_trade_date as tradeDate,
+	b.currency_id as currencyId,
+	b.currency_name as currencyName,
+	b.currency_character as currencyCharacter,
+	b.exchange_rate as exchangeRate
+FROM
+	app_position_count b
+LEFT JOIN
+	app_product ap on b.product_id = ap.id
+where
+	case when b.trans_share = 0 then b.money &lt;= 0 else b.share &lt;= 0 end
+	and b.current_book = 0
+	and b.is_deleted = 0
+	and b.customer_id = #{param.customerId}
+    </select>
+
+</mapper>

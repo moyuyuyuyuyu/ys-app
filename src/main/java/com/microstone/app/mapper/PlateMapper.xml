@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.PlateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="plateResultMap" type="com.microstone.app.entity.Plate">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="name" property="name"/>
+        <result column="type" property="type"/>
+        <result column="note" property="note"/>
+        <result column="enabled" property="enabled"/>
+        <result column="sort" property="sort"/>
+        <result column="cbs_id" property="cbsId"/>
+    </resultMap>
+
+
+    <select id="selectPlatePage" resultMap="plateResultMap">
+        select * from app_plate where is_deleted = 0
+    </select>
+
+    <select id="getRecommend" resultType="com.microstone.app.vo.RecommendVO">
+        SELECT
+                id,
+                plate_id,
+                title,
+                publish_date,
+                cover,
+                type,
+                url
+        FROM
+                (
+                        SELECT
+                                aaa.id,
+                                aaa.title,
+                                aaa.publish_date,
+                                aaa.cover,
+                                aaa.type,
+                                aaa.url,
+                                aaa.plate_id
+                        FROM
+                                app_article aaa
+                                        LEFT JOIN app_plate ap ON aaa.plate_id = ap.id
+                        WHERE
+                                aaa.is_deleted = 0
+                          AND ap.enabled = 1
+                          AND aaa.user_id is null
+                        UNION
+                        SELECT
+                                ad.id,
+                                ad.title,
+                                ad.publish_date,
+                                ad.cover,
+                                ad.type,
+                                ad.original_path url,
+                                ad.plate_id
+                        FROM
+                                app_document ad
+                                        LEFT JOIN app_plate ap ON ad.plate_id = ap.id
+                        WHERE
+                                ad.is_deleted = 0
+                          AND ap.enabled = 1
+                        UNION
+                        SELECT
+                                apo.id,
+                                apo.title,
+                                apo.publish_date,
+                                apo.short_image cover,
+                                apo.type,
+                                apo.long_image url,
+                                apo.plate_id
+                        FROM
+                                app_poster apo
+                                        LEFT JOIN app_plate ap ON apo.plate_id = ap.id
+                        WHERE
+                                apo.is_deleted = 0
+                          AND ap.enabled = 1
+                        UNION
+                        SELECT
+                                av.id,
+                                av.title,
+                                av.publish_date,
+                                av.cover,
+                                av.type,
+                                av.url url,
+                                av.plate_id
+                        FROM
+                                app_video av
+                                        LEFT JOIN app_plate ap ON av.plate_id = ap.id
+                        WHERE
+                                av.is_deleted = 0
+                          AND ap.enabled = 1
+                        ) AS aa
+        ORDER BY
+                publish_date DESC
+    </select>
+</mapper>

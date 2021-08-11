@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.UserCertificateMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="userCertificateResultMap" type="com.microstone.app.entity.UserCertificate">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="user_id" property="userId"/>
+        <result column="type" property="type"/>
+        <result column="certificate_num" property="certificateNum"/>
+        <result column="accessory_picture" property="accessoryPicture"/>
+    </resultMap>
+
+
+    <select id="selectUserCertificatePage" resultMap="userCertificateResultMap">
+        select * from app_user_certificate where is_deleted = 0
+    </select>
+
+</mapper>

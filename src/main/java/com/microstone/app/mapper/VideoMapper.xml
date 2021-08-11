@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.VideoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="videoResultMap" type="com.microstone.app.entity.Video">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="title" property="title"/>
+        <result column="author" property="author"/>
+        <result column="plate_id" property="plateId"/>
+        <result column="cover" property="cover"/>
+        <result column="content" property="content"/>
+        <result column="url" property="url"/>
+        <result column="publish_date" property="publishDate"/>
+        <result column="sort" property="sort"/>
+        <result column="enabled" property="enabled"/>
+        <result column="description" property="description"/>
+        <result column="is_recommend" property="isRecommend"/>
+        <result column="recommend_reason" property="recommendReason"/>
+        <result column="type" property="type"/>
+        <result column="reading_quantity" property="readingQuantity"/>
+        <result column="share_count" property="shareCount"/>
+        <result column="customer_count" property="customerCount"/>
+        <result column="has_top" property="hasTop"/>
+    </resultMap>
+
+
+    <select id="selectVideoPage" resultMap="videoResultMap">
+        select * from app_video where is_deleted = 0
+    </select>
+
+    <select id="getVideo" resultType="com.microstone.app.vo.VideoVO">
+        select  av.id,
+                av.plate_id plateId,
+                av.create_time createTime,
+                av.title title,
+                av.cover cover,
+                av.description description,
+                av.is_recommend isRecommend,
+                av.recommend_reason recommendReason,
+                av.sort sort,
+                av.publish_date publishDate,
+                av.url url,
+                av.description description,
+                av.type type,
+                av.share_count,
+                av.customer_count
+        from app_video av
+        left join app_plate ap on av.plate_id = ap.id
+        where av.is_deleted = 0
+        and ap.enabled = 1
+        <if test="query.plateId != null and query.plateId != ''">
+            and av.plate_id = #{query.plateId}
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            and av.title like concat('%',#{query.keyword},'%')
+        </if>
+        order by av.sort,av.publish_date desc,av.create_time desc
+    </select>
+
+    <select id="getVideoByTenantId" resultType="com.microstone.app.vo.VideoVO">
+        select  av.id,
+                av.plate_id plateId,
+                av.create_time createTime,
+                av.title title,
+                av.cover cover,
+                av.description description,
+                av.is_recommend isRecommend,
+                av.recommend_reason recommendReason,
+                av.sort sort,
+                av.publish_date publishDate,
+                av.url url,
+                av.description description,
+                av.type type,
+                av.share_count,
+                av.customer_count,
+                av.create_time
+        from app_video av
+        left join app_plate ap on av.plate_id = ap.id
+        where av.is_deleted = 0
+        and av.tenant_id = #{articleQuery.tenantId}
+        <if test="articleQuery.keyword !=null and articleQuery.keyword != ''">
+            and av.title like concat('%',#{articleQuery.keyword},'%')
+        </if>
+        <if test="articleQuery.publishDateStart != null and articleQuery.publishDateStart != ''">
+            and av.publish_date &gt;= #{articleQuery.publishDateStart}
+        </if>
+        <if test="articleQuery.publishDateEnd != null and articleQuery.publishDateEnd != ''">
+            and av.publish_date &lt;= #{articleQuery.publishDateEnd}
+        </if>
+        <if test="articleQuery.plateId != null and articleQuery.plateId != ''">
+            and av.plate_id = #{articleQuery.plateId}
+        </if>
+    </select>
+</mapper>

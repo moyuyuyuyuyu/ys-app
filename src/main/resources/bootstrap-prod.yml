@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: ms-app                     #指定了配置文件的应用名
+  cloud:
+    config:
+      profile: prod                          #指定的环境
+      label: master                        #指定分支
+      discovery:
+        enabled: true                     #开启配置服务发现
+        serviceId: ms-config        #配置中心服务名
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://172.16.20.25:3031/eureka,http://172.16.20.26:3031/eureka
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true

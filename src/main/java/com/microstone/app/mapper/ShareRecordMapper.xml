@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.ShareRecordMapper">
+
+
+    <select id="getShareRecordPageList" resultType="com.microstone.app.dto.GetShareRecordPageListDTO">
+        Select * from(
+        SELECT
+        r.id,
+        r.relation_id as relationId,
+        r.type,
+        case r.type when 1 then a.title
+        when 2 then v.title
+        when 3 then d.title
+        else p.title end as title,
+        r.share_count as shareCount,
+        r.read_count as readCount,
+        r.read_user_count as readUserCount,
+        r.share_date as shareDate,
+        r.share_user_id as shareUserId,
+        r.share_type as shareType,
+        r.parent_id
+        FROM
+        app_share_record r
+        LEFT JOIN
+        app_article a on r.relation_id = a.id
+        LEFT JOIN
+        app_video v on r.relation_id = v.id
+        LEFT JOIN
+        app_document d on r.relation_id = d.id
+        LEFT JOIN
+        app_poster p on r.relation_id = p.id
+        WHERE
+        r.is_deleted = 0) a
+        <where>
+            <if test="param.type != null">
+                and a.type = #{param.type}
+            </if>
+            <if test="param.parentId != null">
+                and a.parent_id = #{param.parentId} and a.shareType = 2
+            </if>
+            <if test="param.parentId == null">
+                and a.shareType = 1
+            </if>
+            <if test="param.title != null and param.title != ''">
+                and a.title = #{param.title}
+            </if>
+        </where>
+        order by a.shareDate desc
+    </select>
+
+
+    <select id="getShareRecordForAppPageList" resultType="com.microstone.app.dto.GetShareRecordPageListDTO">
+        Select r.*,
+        case r.type when 1 then a.title
+        when 2 then v.title
+        when 3 then d.title
+        else p.title end as title,
+        case r.type when 1 then a.cover
+        when 2 then v.cover
+        when 3 then d.original_path
+        else p.short_image end as cover
+        FROM(
+        Select
+        rr.relation_id as relationId,
+        rr.type,
+        Max(rr.share_date) as shareDate,
+        rr.share_type,
+        rr.tenant_id,
+        Count(1) as shareCount,
+        Sum(rr.readCount) as readCount,
+        Sum(rr.readUserCount) as readUserCount
+        from
+        (select
+        r.relation_id,
+        r.type,
+        r.share_date,
+        r.share_type,
+        r.tenant_id,
+        r.read_count as readCount,
+        r.read_user_count as readUserCount
+        FROM
+        app_share_record r
+        WHERE
+        r.share_type = 1
+        and
+        r.is_deleted = 0
+        and
+        r.share_user_id = #{param.userId}
+        ) rr
+        GROUP BY
+        rr.relation_id,
+        rr.type,
+        rr.share_type,
+        rr.tenant_id ) r
+        LEFT JOIN
+        app_article a on r.relationId = a.id
+        LEFT JOIN
+        app_video v on r.relationId = v.id
+        LEFT JOIN
+        app_document d on r.relationId = d.id
+        LEFT JOIN
+        app_poster p on r.relationId = p.id
+        <if test="param.sort ==1">
+            order by r.shareDate desc
+        </if>
+        <if test="param.sort ==2">
+            order by r.readCount desc
+        </if>
+        <if test="param.sort ==3">
+            order by r.shareCount desc
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.AnnouncementMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="announcementResultMap" type="com.microstone.app.entity.Announcement">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="title" property="title"/>
+        <result column="author" property="author"/>
+        <result column="content" property="content"/>
+        <result column="publish_date" property="publishDate"/>
+        <result column="sort" property="sort"/>
+    </resultMap>
+
+
+    <select id="selectAnnouncementPage" resultMap="announcementResultMap">
+        select * from app_announcement where is_deleted = 0
+    </select>
+
+    <select id="getAnnouncement" resultType="com.microstone.app.vo.AnnouncementVO">
+        select * from app_announcement where is_deleted = 0
+        <if test="articleQuery.keyword != null and articleQuery.keyword != ''">
+            and title like concat('%',#{articleQuery.keyword},'%')
+        </if>
+        <if test="articleQuery.publishDateStart != null and articleQuery.publishDateStart != ''">
+            and publish_date &gt;= #{articleQuery.publishDateStart}
+        </if>
+        <if test="articleQuery.publishDateEnd != null and articleQuery.publishDateEnd != ''">
+            and publish_date &lt;= #{articleQuery.publishDateEnd}
+        </if>
+        order by publish_date desc
+    </select>
+</mapper>

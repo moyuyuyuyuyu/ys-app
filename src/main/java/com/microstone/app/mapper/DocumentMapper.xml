@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.DocumentMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="documentResultMap" type="com.microstone.app.entity.Document">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="title" property="title"/>
+        <result column="author" property="author"/>
+        <result column="plate_id" property="plateId"/>
+        <result column="cover" property="cover"/>
+        <result column="content" property="content"/>
+        <result column="url" property="url"/>
+        <result column="publish_date" property="publishDate"/>
+        <result column="sort" property="sort"/>
+        <result column="enabled" property="enabled"/>
+        <result column="file_path" property="filePath"/>
+        <result column="original_path" property="originalPath"/>
+        <result column="category" property="category"/>
+        <result column="recommend_reason" property="recommendReason"/>
+        <result column="is_recommend" property="isRecommend"/>
+        <result column="type" property="type"/>
+        <result column="reading_quantity" property="readingQuantity"/>
+        <result column="share_count" property="shareCount"/>
+        <result column="customer_count" property="customerCount"/>
+        <result column="cbs_id" property="cbsId"/>
+        <result column="picture_path" property="picturePath"/>
+        <result column="has_top" property="hasTop"/>
+    </resultMap>
+
+
+    <select id="selectDocumentPage" resultMap="documentResultMap">
+        select * from app_document where is_deleted = 0
+    </select>
+
+    <select id="getDocument" resultType="com.microstone.app.vo.DocumentVO">
+        select ad.id id,
+            ad.plate_id plateId,
+            ad.title title,
+            ad.category category,
+            ad.create_time createTime,
+            ad.recommend_reason recommendReason,
+            ad.is_recommend isRecommend,
+            ad.sort sort,
+            ad.original_path originalPath,
+            ad.publish_date publishDate,
+            ad.type type,
+            ad.share_count,
+            ad.customer_count,
+            ad.cbs_id cbsId,
+            ad.create_time,
+            ad.picture_path picturePath
+        from app_document ad
+        left join app_plate ap on ad.plate_id = ap.id
+        where ad.is_deleted = 0
+        and ap.enabled = 1
+        <if test="query.plateId != null and query.plateId != ''">
+            and ad.plate_id = #{query.plateId}
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            and ad.title like concat('%',#{query.keyword},'%')
+        </if>
+        order by ad.sort,ad.publish_date desc,ad.create_time desc
+    </select>
+
+    <select id="getDocumentByTenantId" resultType="com.microstone.app.vo.DocumentVO">
+        select ad.id id,
+               ad.plate_id plateId,
+               ad.title title,
+               ad.category category,
+               ad.create_time createTime,
+               ad.recommend_reason recommendReason,
+               ad.is_recommend isRecommend,
+               ad.sort sort,
+               ad.original_path originalPath,
+               ad.publish_date publishDate,
+               ad.type type,
+               ad.share_count,
+               ad.customer_count,
+               ad.cbs_id cbsId,
+               ad.picture_path picturePath
+        from app_document ad
+        left join app_plate ap on ad.plate_id = ap.id
+        where ad.is_deleted = 0
+        and ap.enabled = 1
+        and ad.tenant_id = #{articleQuery.tenantId}
+        <if test="articleQuery.keyword != null and articleQuery.keyword != ''">
+            and ad.title like concat('%',#{articleQuery.keyword},'%')
+        </if>
+        <if test="articleQuery.publishDateStart != null and articleQuery.publishDateStart != ''">
+            and ad.publish_date &gt;= #{articleQuery.publishDateStart}
+        </if>
+        <if test="articleQuery.publishDateEnd != null and articleQuery.publishDateEnd != ''">
+            and ad.publish_date &lt;= #{articleQuery.publishDateEnd}
+        </if>
+        <if test="articleQuery.plateId != null and articleQuery.plateId != ''">
+            and ad.plate_id = #{articleQuery.plateId}
+        </if>
+    </select>
+</mapper>

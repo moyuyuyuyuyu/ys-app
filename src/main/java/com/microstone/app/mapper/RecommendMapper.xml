@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.RecommendMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="recommendResultMap" type="com.microstone.app.entity.Recommend">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="news_id" property="newsId"/>
+        <result column="news_name" property="newsName"/>
+        <result column="type" property="type"/>
+        <result column="sort" property="sort"/>
+        <result column="news_content" property="newsContent"/>
+        <result column="plate_id" property="plateId"/>
+        <result column="name" property="name"/>
+    </resultMap>
+
+    <select id="getRecommendList" resultType="com.microstone.app.vo.RecommendsVO">
+        SELECT
+                ar.*, aa.has_top
+        FROM
+                app_recommend ar
+                        INNER JOIN (
+                        SELECT
+                                id,
+                                plate_id,
+                                title,
+                                publish_date,
+                                cover,
+                                type,
+                                url,
+                                reading_quantity,
+                                share_count,
+                                customer_count,
+                                has_top
+                        FROM
+                                (
+                                        SELECT
+                                                aaa.id,
+                                                aaa.title,
+                                                aaa.publish_date,
+                                                aaa.cover,
+                                                aaa.type,
+                                                aaa.url,
+                                                aaa.plate_id,
+                                                aaa.reading_quantity,
+                                                aaa.share_count,
+                                                aaa.customer_count,
+                                                aaa.has_top
+                                        FROM
+                                                app_article aaa
+                                                        LEFT JOIN app_plate ap ON aaa.plate_id = ap.id
+                                        WHERE
+                                                aaa.is_deleted = 0
+                                          AND ap.enabled = 1
+                                        UNION
+                                        SELECT
+                                                ad.id,
+                                                ad.title,
+                                                ad.publish_date,
+                                                ad.cover,
+                                                ad.type,
+                                                ad.original_path url,
+                                                ad.plate_id,
+                                                ad.reading_quantity,
+                                                ad.share_count,
+                                                ad.customer_count,
+                                                ad.has_top
+                                        FROM
+                                                app_document ad
+                                                        LEFT JOIN app_plate ap ON ad.plate_id = ap.id
+                                        WHERE
+                                                ad.is_deleted = 0
+                                          AND ap.enabled = 1
+                                        UNION
+                                        SELECT
+                                                apo.id,
+                                                apo.title,
+                                                apo.publish_date,
+                                                apo.short_image cover,
+                                                apo.type,
+                                                apo.long_image url,
+                                                apo.plate_id,
+                                                apo.reading_quantity,
+                                                apo.share_count,
+                                                apo.customer_count,
+                                                apo.has_top
+                                        FROM
+                                                app_poster apo
+                                                        LEFT JOIN app_plate ap ON apo.plate_id = ap.id
+                                        WHERE
+                                                apo.is_deleted = 0
+                                          AND ap.enabled = 1
+                                        UNION
+                                        SELECT
+                                                av.id,
+                                                av.title,
+                                                av.publish_date,
+                                                av.cover,
+                                                av.type,
+                                                av.url url,
+                                                av.plate_id,
+                                                av.reading_quantity,
+                                                av.share_count,
+                                                av.customer_count,
+                                                av.has_top
+                                        FROM
+                                                app_video av
+                                                        LEFT JOIN app_plate ap ON av.plate_id = ap.id
+                                        WHERE
+                                                av.is_deleted = 0
+                                          AND ap.enabled = 1
+                                        ) AS aa
+                        ) as aa ON ar.news_id = aa.id
+        where is_deleted = 0 order by aa.has_top desc,create_time desc
+    </select>
+
+    <select id="getAppRecommend" resultType="com.microstone.app.vo.RecommendVO">
+        SELECT
+            id,
+            plate_id,
+            title,
+            publish_date,
+            cover,
+            type,
+            url,
+            reading_quantity,
+            share_count,
+            customer_count,
+            has_top
+        FROM
+        (
+            SELECT
+                aaa.id,
+                aaa.title,
+                aaa.publish_date,
+                aaa.cover,
+                aaa.type,
+                aaa.url,
+                aaa.plate_id,
+                aaa.reading_quantity,
+                aaa.share_count,
+                aaa.customer_count,
+                aaa.has_top
+            FROM
+                app_article aaa
+            LEFT JOIN app_plate ap ON aaa.plate_id = ap.id
+            WHERE
+                aaa.is_deleted = 0
+            AND ap.enabled = 1
+            UNION
+            SELECT
+                ad.id,
+                ad.title,
+                ad.publish_date,
+                ad.cover,
+                ad.type,
+                ad.original_path url,
+                ad.plate_id,
+                ad.reading_quantity,
+                ad.share_count,
+                ad.customer_count,
+                ad.has_top
+            FROM
+                app_document ad
+            LEFT JOIN app_plate ap ON ad.plate_id = ap.id
+            WHERE
+                ad.is_deleted = 0
+            AND ap.enabled = 1
+            UNION
+            SELECT
+                apo.id,
+                apo.title,
+                apo.publish_date,
+                apo.short_image cover,
+                apo.type,
+                apo.long_image url,
+                apo.plate_id,
+                apo.reading_quantity,
+                apo.share_count,
+                apo.customer_count,
+                apo.has_top
+            FROM
+                app_poster apo
+            LEFT JOIN app_plate ap ON apo.plate_id = ap.id
+            WHERE
+                apo.is_deleted = 0
+            AND ap.enabled = 1
+            UNION
+            SELECT
+                av.id,
+                av.title,
+                av.publish_date,
+                av.cover,
+                av.type,
+                av.url url,
+                av.plate_id,
+                av.reading_quantity,
+                av.share_count,
+                av.customer_count,
+                av.has_top
+            FROM
+                app_video av
+            LEFT JOIN app_plate ap ON av.plate_id = ap.id
+            WHERE
+                av.is_deleted = 0
+            AND ap.enabled = 1
+        ) AS aa
+        <where>
+            <if test="articleQuery.plateId != null and articleQuery.plateId != ''">
+                aa.plate_id = #{articleQuery.plateId}
+            </if>
+            <if test="articleQuery.keyword != null and articleQuery.keyword != ''">
+                and aa.title like concat('%',#{articleQuery.keyword},'%')
+            </if>
+            <if test="(articleQuery.plateId == null or articleQuery.plateId == '') and (articleQuery.ids == null or articleQuery.ids.isEmpty())">
+                and aa.id = 1
+            </if>
+            <if test="(articleQuery.plateId == null or articleQuery.plateId == '') and (articleQuery.ids != null and !articleQuery.ids.isEmpty())">
+                <foreach collection="articleQuery.ids" item="id" separator="," open="and aa.id IN (" close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+        </where>
+        ORDER BY
+        has_top desc,publish_date DESC
+    </select>
+
+    <select id="getAllRelation" resultType="com.microstone.app.vo.RecommendVO">
+        SELECT
+                id,
+                plate_id,
+                title,
+                publish_date,
+                cover,
+                type,
+                url,
+                reading_quantity,
+                share_count,
+                customer_count,
+                has_top
+        FROM
+                (
+                        SELECT
+                                aaa.id,
+                                aaa.title,
+                                aaa.publish_date,
+                                aaa.cover,
+                                aaa.type,
+                                aaa.url,
+                                aaa.plate_id,
+                                aaa.reading_quantity,
+                                aaa.share_count,
+                                aaa.customer_count,
+                                aaa.has_top
+                        FROM
+                                app_article aaa
+                                        LEFT JOIN app_plate ap ON aaa.plate_id = ap.id
+                        WHERE
+                                aaa.is_deleted = 0
+                          AND ap.enabled = 1
+                        UNION
+                        SELECT
+                                ad.id,
+                                ad.title,
+                                ad.publish_date,
+                                ad.cover,
+                                ad.type,
+                                ad.original_path url,
+                                ad.plate_id,
+                                ad.reading_quantity,
+                                ad.share_count,
+                                ad.customer_count,
+                                ad.has_top
+                        FROM
+                                app_document ad
+                                        LEFT JOIN app_plate ap ON ad.plate_id = ap.id
+                        WHERE
+                                ad.is_deleted = 0
+                          AND ap.enabled = 1
+                        UNION
+                        SELECT
+                                apo.id,
+                                apo.title,
+                                apo.publish_date,
+                                apo.short_image cover,
+                                apo.type,
+                                apo.long_image url,
+                                apo.plate_id,
+                                apo.reading_quantity,
+                                apo.share_count,
+                                apo.customer_count,
+                                apo.has_top
+                        FROM
+                                app_poster apo
+                                        LEFT JOIN app_plate ap ON apo.plate_id = ap.id
+                        WHERE
+                                apo.is_deleted = 0
+                          AND ap.enabled = 1
+                        UNION
+                        SELECT
+                                av.id,
+                                av.title,
+                                av.publish_date,
+                                av.cover,
+                                av.type,
+                                av.url url,
+                                av.plate_id,
+                                av.reading_quantity,
+                                av.share_count,
+                                av.customer_count,
+                                av.has_top
+                        FROM
+                                app_video av
+                                        LEFT JOIN app_plate ap ON av.plate_id = ap.id
+                        WHERE
+                                av.is_deleted = 0
+                          AND ap.enabled = 1
+                        ) AS aa
+    </select>
+</mapper>

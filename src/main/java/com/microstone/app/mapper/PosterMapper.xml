@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.PosterMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="posterResultMap" type="com.microstone.app.entity.Poster">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="title" property="title"/>
+        <result column="author" property="author"/>
+        <result column="plate_id" property="plateId"/>
+        <result column="cover" property="cover"/>
+        <result column="content" property="content"/>
+        <result column="url" property="url"/>
+        <result column="publish_date" property="publishDate"/>
+        <result column="sort" property="sort"/>
+        <result column="enabled" property="enabled"/>
+        <result column="short_image" property="enabled"/>
+        <result column="long_image" property="enabled"/>
+        <result column="category" property="category"/>
+        <result column="link_info" property="linkInfo"/>
+        <result column="link_code" property="linkCode"/>
+        <result column="is_recommend" property="isRecommend"/>
+        <result column="recommend_reason" property="recommendReason"/>
+        <result column="type" property="type"/>
+        <result column="reading_quantity" property="readingQuantity"/>
+        <result column="share_count" property="shareCount"/>
+        <result column="customer_count" property="customerCount"/>
+        <result column="cbs_id" property="cbsId"/>
+        <result column="has_top" property="hasTop"/>
+    </resultMap>
+
+
+    <select id="selectPosterPage" resultMap="posterResultMap">
+        select * from app_poster where is_deleted = 0
+    </select>
+
+    <select id="getPoster" resultType="com.microstone.app.vo.PosterVO">
+        select apo.id id,
+               apo.title title,
+               apo.short_image shortImage,
+               apo.long_image longImage,
+               apo.category category,
+               apo.link_code linkCode,
+               apo.link_info linkInfo,
+               apo.is_recommend isRecommend,
+               apo.recommend_reason recommendReason,
+               apo.plate_id plateId,
+               apo.create_time createTime,
+               apo.sort sort,
+               apo.publish_date publishDate,
+               apo.type type,
+               apo.share_count,
+               apo.customer_count,
+               apo.cbs_id cbsId,
+               apo.create_time
+        from app_poster apo
+        left join app_plate ap on apo.plate_id = ap.id
+        where apo.is_deleted = 0
+        and ap.enabled = 1
+        <if test="query.plateId != null and query.plateId != ''">
+            and plate_id = #{query.plateId}
+        </if>
+        <if test="query.keyword != null and query.keyword != ''">
+            and title like concat('%',#{query.keyword},'%')
+        </if>
+        order by sort,apo.publish_date desc,apo.create_time desc
+    </select>
+
+    <select id="getPosterByTenantId" resultType="com.microstone.app.vo.PosterVO">
+        select apo.id id,
+            apo.title title,
+            apo.short_image shortImage,
+            apo.long_image longImage,
+            apo.category category,
+            apo.link_code linkCode,
+            apo.link_info linkInfo,
+            apo.is_recommend isRecommend,
+            apo.recommend_reason recommendReason,
+            apo.plate_id plateId,
+            apo.create_time createTime,
+            apo.sort sort,
+            apo.publish_date publishDate,
+            apo.type type,
+            apo.share_count,
+            apo.customer_count,
+            apo.cbs_id cbsId
+            from app_poster apo
+            left join app_plate ap on apo.plate_id = ap.id
+            where apo.is_deleted = 0
+            and ap.enabled = 1
+            and apo.tenant_id = #{articleQuery.tenantId}
+        <if test="articleQuery.keyword != null and articleQuery.keyword != ''">
+            and apo.title like concat('%',#{articleQuery.keyword},'%')
+        </if>
+        <if test="articleQuery.publishDateStart != null and articleQuery.publishDateStart != ''">
+            and apo.publish_date &gt;= #{articleQuery.publishDateStart}
+        </if>
+        <if test="articleQuery.publishDateEnd != null and articleQuery.publishDateEnd != ''">
+            and apo.publish_date &lt;= #{articleQuery.publishDateEnd}
+        </if>
+        <if test="articleQuery.plateId != null and articleQuery.plateId != ''">
+            and apo.plate_id = #{articleQuery.plateId}
+        </if>
+    </select>
+</mapper>

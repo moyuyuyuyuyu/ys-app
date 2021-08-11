@@ -1,0 +1,123 @@
+server:
+  port: 5255
+# 在使用Spring默认数据源Hikari的情况下配置以下配置项
+spring:
+  main:
+    allow-bean-definition-overriding: true
+    application:
+      name: ${project.artifactId}
+  profiles:
+    active: pre
+  activiti:
+    database-schema-update: false
+  datasource:
+    hikari:
+      # 自动提交从池中返回的连接
+      auto-commit: true
+      # 连接池中维护的最小空闲连接数
+      minimum-idle: 10
+      # 连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
+      maximum-pool-size: 60
+      # 空闲连接超时时间，默认值600000（10分钟），大于等于max-lifetime且max-lifetime>0，会被重置为0；不等于0且小于10秒，会被重置为10秒。
+      # 只有空闲连接数大于最大连接数且空闲时间超过该值，才会被释放
+      idle-timeout: 30000
+      # 连接最大存活时间.不等于0且小于30秒，会被重置为默认值30分钟.设置应该比mysql设置的超时时间短
+      max-lifetime: 1800000
+      # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒
+      connection-timeout: 30000
+      # 连接测试查询
+      connection-test-query: select 1
+      #connection-test-query: select 1 from dual
+
+#feign配置
+feign:
+  hystrix:
+    enabled: true
+  okhttp:
+    enabled: true
+  httpclient:
+    enabled: false
+
+
+#hystrix配置
+hystrix:
+  threadpool:
+    default:
+      coreSize: 300
+      maxQueueSize: 1000
+      queueSizeRejectionThreshold: 800
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 120000
+
+#ribbon配置
+ribbon:
+  #对当前实例的重试次数
+  MaxAutoRetries: 0
+  #切换实例的重试次数
+  MaxAutoRetriesNextServer: 1
+  #请求处理的超时时间
+  ReadTimeout: 120000
+  #请求连接的超时时间
+  ConnectTimeout: 120000
+  #对所有操作请求都进行重试
+  OkToRetryOnAllOperations: true
+
+info:
+  app:
+    name: ${project.artifactId}
+    version: ${project.version}
+    description: ${ms.project.description}
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
+  info:
+    git:
+      mode: full
+#swagger文档
+swagger:
+  base-packages:
+    - ${ms.project.base.packages}
+
+
+
+#==================== 日志配合·标准  ============================
+#日志级别
+logging:
+  level:
+    root: info
+  file: D:\\home\\logs\\sample.log
+  # 修改在控制台输出的日志格式
+  pattern:
+  #console: %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{30} -%msg%n
+  # 修改输出到文件的日志格式
+  #file: %d{yyyy/MM/dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} %msg%n
+# 文件分块设置
+#logging.file.max-size=10MB
+ms:
+  xss:
+    enabled: true
+    skip-url:
+      - /article/saveArticle
+      - /article/editArticle
+      - /article/getArticleToJsonByHtml
+
+qrcode:
+#生成二维码appid
+  appid: wxa40a9c5e158e374c
+#生成二维码secret
+  secret: b68610d288b4f3576beeb38c897328bd
+#获取token地址
+  accessTokenPath: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential
+#生成二维码请求地址
+  qrCodePath: https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=

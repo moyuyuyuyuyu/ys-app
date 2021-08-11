@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="userResultMap" type="com.microstone.app.entity.User">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="name" property="name"/>
+        <result column="head_icon" property="headIcon"/>
+        <result column="company" property="company"/>
+        <result column="job" property="job"/>
+        <result column="company_address" property="companyAddress"/>
+        <result column="self_introduce" property="selfIntroduce"/>
+        <result column="mobile_phone" property="mobilePhone"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="wechat" property="wechat"/>
+        <result column="address" property="address"/>
+        <result column="organization_account" property="organizationAccount"/>
+        <result column="upload_business_card" property="uploadBusinessCard"/>
+        <result column="business_card_tags" property="businessCardTags"/>
+        <result column="customer_evaluate_tags" property="customerEvaluateTags"/>
+    </resultMap>
+
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="appUserInfoResultMap" type="com.microstone.app.entity.AppUserInfo">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="name" property="name"/>
+        <result column="head_icon" property="headIcon"/>
+        <result column="company" property="company"/>
+        <result column="job" property="job"/>
+        <result column="company_address" property="companyAddress"/>
+        <result column="self_introduce" property="selfIntroduce"/>
+        <result column="mobile_phone" property="mobilePhone"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="wechat" property="wechat"/>
+        <result column="address" property="address"/>
+        <result column="organization_account" property="organizationAccount"/>
+        <result column="upload_business_card" property="uploadBusinessCard"/>
+        <result column="business_card_tags" property="businessCardTags"/>
+        <result column="customer_evaluate_tags" property="customerEvaluateTags"/>
+    </resultMap>
+
+    <select id="selectUserPage" resultMap="userResultMap">
+        select * from app_user where is_deleted = 0
+    </select>
+
+
+    <select id="getUser" resultMap="appUserInfoResultMap">
+        SELECT
+            *
+        FROM
+            app_user
+        WHERE
+            mobile_phone = #{param} and is_deleted = 0
+    </select>
+
+    <select id="getUserById" resultMap="appUserInfoResultMap">
+        SELECT
+            *
+        FROM
+            app_user
+        WHERE
+            id = #{param} and is_deleted = 0
+    </select>
+
+
+
+
+
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.microstone.app.mapper.FeedbackMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="announcementResultMap" type="com.microstone.app.entity.Feedback">
+        <result column="id" property="id"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_dept" property="createDept"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="submitter" property="submitter"/>
+        <result column="submitter_id" property="submitterId"/>
+        <result column="mobile" property="mobile"/>
+        <result column="content" property="content"/>
+        <result column="has_contact" property="hasContact"/>
+        <result column="publish_date" property="publishDate"/>
+        <result column="accessory" property="accessory"/>
+    </resultMap>
+
+    <select id="getFeedback" resultType="com.microstone.app.vo.FeedbackVO">
+        select * from app_feedback where is_deleted = 0
+        <if test="query.keyword != null and query.keyword != ''">
+            and submitter like concat('%',#{query.keyword},'%')
+        </if>
+        <if test="query.publishDateStart != null and query.publishDateStart != ''">
+            and publish_date &gt;= #{query.publishDateStart}
+        </if>
+        <if test="query.publishDateEnd != null and query.publishDateEnd != ''">
+            and publish_date &lt;= #{query.publishDateEnd}
+        </if>
+        order by create_time desc
+    </select>
+</mapper>

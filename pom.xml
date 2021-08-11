@@ -258,13 +258,13 @@
                 <scope>import</scope>
             </dependency>
 
-            <dependency>
+<!--            <dependency>
                 <groupId>org.microstone.platform</groupId>
                 <artifactId>ms-bom</artifactId>
                 <version>${ms.tool.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
+            </dependency>-->
 
             <dependency>
                 <groupId>io.spring.platform</groupId>
@@ -349,12 +349,6 @@
     </build>
 
     <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>http://repo.spring.io/milestone</url>
-        </repository>
-
         <repository>
             <id>ms-nexus</id>
             <name>Release Repository</name>

@@ -350,10 +350,12 @@
     </build>
 
     <repositories>
+
+
         <repository>
             <id>ms-nexus</id>
             <name>Release Repository</name>
-            <url>http://cnexus.icwn.cn:8081/repository/maven-releases/</url>
+            <url>https://cnexus.icwn.cn:8081/repository/maven-releases/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy></releases>
@@ -373,7 +375,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>ms-nexus</id>
-            <url>http://cnexus.icwn.cn:8081/repository/maven-public/</url>
+            <url>https://cnexus.icwn.cn:8081/repository/maven-public/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>

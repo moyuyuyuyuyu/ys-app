@@ -355,7 +355,7 @@
         <repository>
             <id>ms-nexus</id>
             <name>Release Repository</name>
-            <url>https://cnexus.icwn.cn/repository/maven-releases/</url>
+            <url>https://cnexus.icwn.cn/repository/maven-public/</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy></releases>

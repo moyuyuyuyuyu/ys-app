@@ -109,6 +109,9 @@ public class CustomerServiceImpl extends BaseServiceImpl<CustomerMapper, Custome
         }
         if (param.getFocus() != null) {
             queryWrapper = queryWrapper.eq(Customer::getFocus, param.getFocus());
+            if(param.getFocus()){
+                queryWrapper = queryWrapper.eq(Customer::getUserId, AuthUtil.getAppUserId());
+            }
         }
         if (param.getName() != null && !param.getName().equals("")) {
             queryWrapper = queryWrapper.like(Customer::getName, param.getName());

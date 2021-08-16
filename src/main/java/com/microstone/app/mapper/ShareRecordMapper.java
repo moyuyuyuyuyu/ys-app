@@ -22,5 +22,7 @@ public interface ShareRecordMapper extends BaseMapper<ShareRecord> {
 
 	IPage<GetShareRecordPageListDTO> getShareRecordPageList(IPage page, @Param("param") GetShareRecordPageListParam param);
 
+	List<GetShareRecordPageListDTO> getShareRecordPageList(@Param("param") GetShareRecordPageListParam param);
+
 	IPage<GetShareRecordPageListDTO> getShareRecordForAppPageList(IPage page, @Param("param") GetShareRecordForAppPageListParam param);
 }

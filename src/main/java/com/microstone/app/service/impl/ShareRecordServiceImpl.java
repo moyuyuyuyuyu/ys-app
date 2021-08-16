@@ -1,8 +1,10 @@
 package com.microstone.app.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.microstone.app.dto.ExportShareRecordListDTO;
 import com.microstone.app.dto.GetShareRecordPageListDTO;
 import com.microstone.app.dto.HomePageShareCountInfoDTO;
+import com.microstone.app.dto.ImportProductExcel;
 import com.microstone.app.dto.ShareCountInfoDTO;
 import com.microstone.app.entity.ReadRecord;
 import com.microstone.app.entity.ShareRecord;
@@ -18,6 +20,7 @@ import com.microstone.app.service.IUserService;
 import com.microstone.app.service.IWechatUserService;
 import com.microstone.app.mapper.ShareRecordMapper;
 import com.microstone.app.service.IShareRecordService;
+import org.microstone.core.excel.util.ExcelUtil;
 import org.microstone.core.mp.base.BaseServiceImpl;
 import org.microstone.core.mp.support.Condition;
 import org.microstone.core.secure.utils.AuthUtil;
@@ -28,6 +31,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.microstone.system.cache.UserCache;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -89,9 +95,9 @@ public class ShareRecordServiceImpl extends BaseServiceImpl<ShareRecordMapper, S
 
     /**
      * 获取分享code
-     * */
+     */
     @Override
-    public ShareRecord getShareRecordByCode(GetShareRecordByCodeParam param){
+    public ShareRecord getShareRecordByCode(GetShareRecordByCodeParam param) {
         ShareRecord record = this.getOne(new LambdaQueryWrapper<ShareRecord>().eq(ShareRecord::getShareCode, param.getShareCode()));
         return record;
     }
@@ -112,7 +118,7 @@ public class ShareRecordServiceImpl extends BaseServiceImpl<ShareRecordMapper, S
                 item.setMobile(user.getMobilePhone());
                 item.setHeadImage(user.getHeadIcon());
             } else {
-                WechatUser wu =wechatUserService.getById(item.getShareUserId());
+                WechatUser wu = wechatUserService.getById(item.getShareUserId());
                 item.setShareUserName(wu.getName());
                 item.setMobile(wu.getPhone());
                 item.setHeadImage(wu.getHeadImage());
@@ -120,6 +126,47 @@ public class ShareRecordServiceImpl extends BaseServiceImpl<ShareRecordMapper, S
         }
         page.setRecords(list);
         return page;
+    }
+
+
+    /**
+     * 分享
+     */
+    @Override
+    public void exportShareRecordPageList(GetShareRecordPageListParam param, HttpServletResponse response) {
+        List<GetShareRecordPageListDTO> list = baseMapper.getShareRecordPageList(param);
+        List<ExportShareRecordListDTO> res = new ArrayList<>();
+        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
+        for (GetShareRecordPageListDTO item : list) {
+            ExportShareRecordListDTO dto = new ExportShareRecordListDTO();
+            dto.setTitle(item.getTitle());
+            if (item.getType() == 1) {
+                dto.setType("文章");
+            }
+            if (item.getType() == 2) {
+                dto.setType("视频");
+            }
+            if (item.getType() == 3) {
+                dto.setType("文档");
+            }
+            if (item.getType() == 4) {
+                dto.setType("海报");
+            }
+            dto.setShareDate(f.format(item.getShareDate()));
+            dto.setShareType(item.getShareType() == 1 ? "首次" : "二次");
+            dto.setShareCount(item.getShareCount());
+            dto.setReadCount(item.getReadCount());
+            dto.setReadUserCount(item.getReadUserCount());
+            if (item.getShareType() == 1) {
+                User user = userService.getById(item.getShareUserId());
+                dto.setShareUserName(user.getName());
+            } else {
+                WechatUser wu = wechatUserService.getById(item.getShareUserId());
+                dto.setShareUserName(wu.getName());
+            }
+            res.add(dto);
+        }
+        ExcelUtil.export(response, res, ExportShareRecordListDTO.class);
     }
 
 
@@ -145,7 +192,7 @@ public class ShareRecordServiceImpl extends BaseServiceImpl<ShareRecordMapper, S
         ShareCountInfoDTO res = new ShareCountInfoDTO();
         LambdaQueryWrapper<ShareRecord> queryWrapper = new LambdaQueryWrapper<ShareRecord>()
                 .eq(ShareRecord::getIsDeleted, 0);
-        if(param.getApp() != null && param.getApp()){
+        if (param.getApp() != null && param.getApp()) {
             queryWrapper = queryWrapper.eq(ShareRecord::getShareUserId, AuthUtil.getAppUserId());
         }
         List<ShareRecord> recordList = this.list(queryWrapper);
@@ -180,8 +227,8 @@ public class ShareRecordServiceImpl extends BaseServiceImpl<ShareRecordMapper, S
 
         List<Long> totalClue = readList.stream().map(t -> t.getReadUserId()).distinct().collect(Collectors.toList());
 
-        List<Long> thisReadList = readList.stream().filter(t ->  !t.getReadDate().before(thisBeginDate) && !t.getReadDate().after(thisEndDate)).map(t -> t.getReadUserId()).distinct().collect(Collectors.toList());
-        List<Long> lastReadList = readList.stream().filter(t ->  !t.getReadDate().before(lastBeginDate) && !t.getReadDate().after(lastEndDate)).map(t -> t.getReadUserId()).distinct().collect(Collectors.toList());
+        List<Long> thisReadList = readList.stream().filter(t -> !t.getReadDate().before(thisBeginDate) && !t.getReadDate().after(thisEndDate)).map(t -> t.getReadUserId()).distinct().collect(Collectors.toList());
+        List<Long> lastReadList = readList.stream().filter(t -> !t.getReadDate().before(lastBeginDate) && !t.getReadDate().after(lastEndDate)).map(t -> t.getReadUserId()).distinct().collect(Collectors.toList());
 
         List<ShareRecord> thisWeekShareList = recordList.stream().filter(t -> !t.getShareDate().before(thisBeginDate) && !t.getShareDate().after(thisEndDate)).collect(Collectors.toList());
         List<ReadRecord> thisWeekReadList = readList.stream().filter(t -> !t.getReadDate().before(thisBeginDate) && !t.getReadDate().after(thisEndDate)).collect(Collectors.toList());

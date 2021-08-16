@@ -19,6 +19,8 @@ import org.microstone.core.tool.api.R;
 import org.springframework.web.bind.annotation.*;
 import com.microstone.app.service.IShareRecordService;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * 控制器
  *
@@ -61,6 +63,16 @@ public class ShareRecordController extends MsController {
         return R.data(shareRecordService.getShareRecordPageList(param));
     }
 
+
+
+    /**
+     * 导出分享
+     */
+    @PostMapping("exportShareRecordPageList")
+    @ApiOperation(value = "导出分享")
+    public void exportShareRecordPageList(@RequestBody GetShareRecordPageListParam param, HttpServletResponse response){
+        shareRecordService.exportShareRecordPageList(param, response);
+    }
 
     /**
      * 获取分享列表ForApp

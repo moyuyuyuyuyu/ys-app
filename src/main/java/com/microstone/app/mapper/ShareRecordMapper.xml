@@ -31,7 +31,11 @@
         LEFT JOIN
         app_poster p on r.relation_id = p.id
         WHERE
-        r.is_deleted = 0) a
+        r.is_deleted = 0
+        <if test="param.name != null and param.name != ''">
+            and r.share_user_id in (select id from app_user where `name` like concat('%',#{param.name},'%') )
+        </if>
+        ) a
         <where>
             <if test="param.type != null">
                 and a.type = #{param.type}

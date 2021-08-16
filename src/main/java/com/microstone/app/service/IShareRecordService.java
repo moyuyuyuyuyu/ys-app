@@ -13,6 +13,8 @@ import com.microstone.app.vo.ShareRecordVO;
 import org.microstone.core.mp.base.BaseService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  *  服务类
  *
@@ -53,4 +55,10 @@ public interface IShareRecordService extends BaseService<ShareRecord> {
      * 获取首页统计
      */
     HomePageShareCountInfoDTO getHomePageShareCountInfo();
+
+
+    /**
+     * 分享
+     */
+    void exportShareRecordPageList(GetShareRecordPageListParam param, HttpServletResponse response);
 }
